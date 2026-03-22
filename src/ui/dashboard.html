@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBA Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --nba-blue: #1d428a;
+      --nba-red: #c8102e;
+      --nba-white: #ffffff;
+      --bg: var(--color-background-primary, #0a1628);
+      --bg2: var(--color-background-secondary, #111f36);
+      --bg3: var(--color-background-tertiary, #192d4a);
+      --text: var(--color-text-primary, #e8edf3);
+      --text2: var(--color-text-secondary, #8899aa);
+      --border: var(--color-border-primary, #1e3350);
+      --accent: var(--nba-blue);
+      --radius: var(--border-radius-md, 10px);
+      --font: var(--font-sans, 'Inter', system-ui, sans-serif);
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+    .header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+    .header h1 span { color: var(--nba-red); }
+    .tabs { display: flex; gap: 2px; margin-left: auto; background: var(--bg2); border-radius: 8px; padding: 3px; }
+    .tab-btn { padding: 7px 16px; border: none; background: transparent; color: var(--text2); font-size: 13px;
+      font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: var(--font); }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { background: var(--accent); color: var(--nba-white); }
+    .panel { display: none; padding: 16px 20px; }
+    .panel.active { display: block; }
+    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+    .controls select, .controls input { padding: 7px 12px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg2); color: var(--text); font-size: 13px; font-family: var(--font); outline: none; }
+    .controls select:focus, .controls input:focus { border-color: var(--accent); }
+    .controls button { padding: 7px 16px; border-radius: 6px; border: none; background: var(--accent);
+      color: var(--nba-white); font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font); }
+    .controls button:hover { opacity: 0.9; }
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .game-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; transition: border-color 0.15s; }
+    .game-card:hover { border-color: var(--accent); }
+    .game-card .matchup { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .game-card .score { font-size: 22px; font-weight: 800; color: var(--nba-red); margin-bottom: 4px; }
+    .game-card .meta { font-size: 12px; color: var(--text2); }
+    .game-card .status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px;
+      font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+    .status-live { background: var(--nba-red); color: white; }
+    .status-final { background: #2d6a3f; color: white; }
+    .status-upcoming { background: var(--bg3); color: var(--text2); }
+    .leader-table { width: 100%; border-collapse: collapse; }
+    .leader-table th { text-align: left; font-size: 11px; color: var(--text2); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    .leader-table td { padding: 10px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    .leader-table tr:hover { background: var(--bg3); }
+    .leader-table .rank { font-weight: 800; color: var(--accent); width: 36px; }
+    .leader-table .player-name { font-weight: 700; }
+    .leader-table .team-abbr { color: var(--text2); font-size: 12px; margin-left: 6px; }
+    .leader-table .stat-val { font-weight: 800; font-size: 16px; }
+    .schedule-list { display: flex; flex-direction: column; gap: 8px; }
+    .schedule-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg2);
+      border: 1px solid var(--border); border-radius: 8px; }
+    .schedule-row .date { font-size: 12px; color: var(--text2); min-width: 90px; }
+    .schedule-row .teams { font-weight: 700; font-size: 14px; flex: 1; }
+    .schedule-row .venue { font-size: 12px; color: var(--text2); }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--text2); font-size: 14px; }
+    .loading { text-align: center; padding: 32px; color: var(--text2); }
+    .loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .chat-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 20px; background: var(--bg);
+      border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .chat-bar input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg2); color: var(--text); font-size: 13px; font-family: var(--font); outline: none; }
+    .chat-bar button { padding: 10px 20px; border-radius: 8px; border: none; background: var(--accent);
+      color: white; font-weight: 700; font-size: 13px; cursor: pointer; font-family: var(--font); }
+    main { padding-bottom: 64px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><span>NBA</span> Dashboard</h1>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="scoreboard">Scoreboard</button>
+      <button class="tab-btn" data-tab="schedule">Schedule</button>
+      <button class="tab-btn" data-tab="leaders">Leaders</button>
+    </div>
+  </div>
+  <main>
+    <div id="tab-scoreboard" class="panel active">
+      <div class="controls">
+        <input type="date" id="score-date" />
+        <button id="score-load">Load Games</button>
+        <button id="score-today">Today</button>
+      </div>
+      <div id="score-grid" class="game-grid">
+        <div class="loading">Loading scoreboard</div>
+      </div>
+    </div>
+    <div id="tab-schedule" class="panel">
+      <div class="controls">
+        <select id="sched-team"></select>
+        <button id="sched-load">Load Schedule</button>
+      </div>
+      <div id="sched-list" class="schedule-list">
+        <div class="empty-state">Select a team to view schedule</div>
+      </div>
+    </div>
+    <div id="tab-leaders" class="panel">
+      <div class="controls">
+        <select id="leaders-stat">
+          <option value="PTS">Points</option>
+          <option value="AST">Assists</option>
+          <option value="REB">Rebounds</option>
+          <option value="STL">Steals</option>
+          <option value="BLK">Blocks</option>
+        </select>
+        <select id="leaders-mode">
+          <option value="PerGame">Per Game</option>
+          <option value="Totals">Totals</option>
+        </select>
+        <button id="leaders-load">Load Leaders</button>
+      </div>
+      <div id="leaders-content">
+        <div class="empty-state">Select a stat category</div>
+      </div>
+    </div>
+  </main>
+  <div class="chat-bar">
+    <input type="text" id="chat-input" placeholder="Ask Claude about NBA data..." />
+    <button id="chat-send">Ask</button>
+  </div>
+  <script type="module" src="./dashboard.ts"></script>
+</body>
+</html>
