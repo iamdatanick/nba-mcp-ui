@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:ui": "cross-env INPUT=src/ui/dashboard.html vite build",
-    "build:inject": "tsx scripts/bundle-html.ts",
+    "build:ui": "npx cross-env INPUT=src/ui/dashboard.html npx vite build",
+    "build:inject": "npx tsx scripts/bundle-html.ts",
     "build": "npm run build:ui && npm run build:inject",
-    "dev": "wrangler dev",
-    "deploy": "npm run build && wrangler deploy",
-    "typecheck": "tsc --noEmit"
+    "dev": "npx wrangler dev",
+    "deploy": "npm run build && npx wrangler deploy",
+    "typecheck": "npx tsc --noEmit"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.1.2",
@@ -26,7 +26,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
-    "vite-plugin-singlefile": "^2.3.0",
+    "vite-plugin-singlefile": "^2.3.2",
     "wrangler": "^4.0.0"
   }
 }
