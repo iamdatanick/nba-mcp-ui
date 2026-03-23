@@ -7,105 +7,156 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --nba-blue: #1d428a;
-      --nba-red: #c8102e;
-      --nba-white: #ffffff;
-      --bg: var(--color-background-primary, #0a1628);
-      --bg2: var(--color-background-secondary, #111f36);
-      --bg3: var(--color-background-tertiary, #192d4a);
-      --text: var(--color-text-primary, #e8edf3);
-      --text2: var(--color-text-secondary, #8899aa);
-      --border: var(--color-border-primary, #1e3350);
-      --accent: var(--nba-blue);
-      --radius: var(--border-radius-md, 10px);
-      --font: var(--font-sans, 'Inter', system-ui, sans-serif);
+      --nba-blue: #1D428A; --nba-red: #C8102E; --nba-white: #FFFFFF;
+      --nba-dark: #06101F; --nba-navy: #0F2042; --nba-light-blue: #4A7CC7;
+      --nba-orange: #F7821B; --nba-silver: #BEC0C2; --nba-gold: #FFC72C;
+      --nba-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --bg: var(--nba-dark); --bg2: var(--nba-navy); --bg3: #162847;
+      --text: #E8EDF3; --text2: var(--nba-light-blue); --text3: #8899AA;
+      --border: rgba(29,66,138,0.45); --accent: var(--nba-blue);
+      --radius: 8px; --radius-lg: 12px; --font: var(--nba-font);
     }
-    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
-    .header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
-    .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
-    .header h1 span { color: var(--nba-red); }
-    .tabs { display: flex; gap: 2px; margin-left: auto; background: var(--bg2); border-radius: 8px; padding: 3px; }
-    .tab-btn { padding: 7px 16px; border: none; background: transparent; color: var(--text2); font-size: 13px;
-      font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: var(--font); }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    .header { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .logo-mark { display: flex; align-items: center; gap: 10px; }
+    .logo-badge { width: 32px; height: 32px; background: var(--nba-blue); border-radius: 6px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .logo-badge::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 40%; background: var(--nba-red); }
+    .logo-badge-inner { position: relative; z-index: 1; width: 14px; height: 20px; background: var(--nba-white); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: 0.9; }
+    .header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+    .nba-word { color: var(--nba-red); }
+    .header-sub { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); font-weight: 700; }
+    .tabs { display: flex; gap: 2px; margin-left: auto; background: rgba(15,32,66,0.8); border-radius: 8px; padding: 3px; border: 1px solid var(--border); }
+    .tab-btn { padding: 6px 13px; border: none; background: transparent; color: var(--text2); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: all 0.15s; font-family: var(--font); }
     .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { background: var(--accent); color: var(--nba-white); }
+    .tab-btn.active { background: var(--nba-blue); color: var(--nba-white); }
     .panel { display: none; padding: 16px 20px; }
     .panel.active { display: block; }
-    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
-    .controls select, .controls input { padding: 7px 12px; border-radius: 6px; border: 1px solid var(--border);
-      background: var(--bg2); color: var(--text); font-size: 13px; font-family: var(--font); outline: none; }
-    .controls select:focus, .controls input:focus { border-color: var(--accent); }
-    .controls button { padding: 7px 16px; border-radius: 6px; border: none; background: var(--accent);
-      color: var(--nba-white); font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font); }
-    .controls button:hover { opacity: 0.9; }
-    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
-    .game-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 16px; transition: border-color 0.15s; }
-    .game-card:hover { border-color: var(--accent); }
-    .game-card .matchup { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-    .game-card .score { font-size: 22px; font-weight: 800; color: var(--nba-red); margin-bottom: 4px; }
-    .game-card .meta { font-size: 12px; color: var(--text2); }
-    .game-card .status { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px;
-      font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-    .status-live { background: var(--nba-red); color: white; }
-    .status-final { background: #2d6a3f; color: white; }
-    .status-upcoming { background: var(--bg3); color: var(--text2); }
-    .leader-table { width: 100%; border-collapse: collapse; }
-    .leader-table th { text-align: left; font-size: 11px; color: var(--text2); font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 10px; border-bottom: 1px solid var(--border); }
-    .leader-table td { padding: 10px; font-size: 13px; border-bottom: 1px solid var(--border); }
-    .leader-table tr:hover { background: var(--bg3); }
-    .leader-table .rank { font-weight: 800; color: var(--accent); width: 36px; }
-    .leader-table .player-name { font-weight: 700; }
-    .leader-table .team-abbr { color: var(--text2); font-size: 12px; margin-left: 6px; }
-    .leader-table .stat-val { font-weight: 800; font-size: 16px; }
-    .schedule-list { display: flex; flex-direction: column; gap: 8px; }
-    .schedule-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg2);
-      border: 1px solid var(--border); border-radius: 8px; }
-    .schedule-row .date { font-size: 12px; color: var(--text2); min-width: 90px; }
-    .schedule-row .teams { font-weight: 700; font-size: 14px; flex: 1; }
-    .schedule-row .venue { font-size: 12px; color: var(--text2); }
-    .empty-state { text-align: center; padding: 48px 20px; color: var(--text2); font-size: 14px; }
-    .loading { text-align: center; padding: 32px; color: var(--text2); }
-    .loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid var(--border);
-      border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 8px; vertical-align: middle; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+    .controls select, .controls input { padding: 7px 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font-size: 12px; font-family: var(--font); outline: none; transition: border-color 0.15s; }
+    .controls select:focus, .controls input:focus { border-color: var(--nba-blue); }
+    .btn { padding: 7px 14px; border-radius: 6px; border: none; background: var(--nba-blue); color: var(--nba-white); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; font-family: var(--font); transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.88; }
+    .btn-ghost { background: transparent; color: var(--nba-blue); border: 1px solid var(--nba-blue); }
+    .btn-ghost:hover { background: rgba(29,66,138,0.15); opacity: 1; }
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .game-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; transition: border-color 0.15s, transform 0.12s; position: relative; overflow: hidden; }
+    .game-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--nba-blue); opacity: 0.6; }
+    .game-card.live::before { background: var(--nba-red); opacity: 1; animation: pulse-bar 1.4s ease-in-out infinite; }
+    @keyframes pulse-bar { 0%,100%{opacity:1;}50%{opacity:0.35;} }
+    .game-card:hover { border-color: var(--nba-blue); transform: translateY(-1px); }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .badge-live { background: var(--nba-red); color: white; }
+    .badge-live::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; animation: blink 1s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+    .badge-final { background: rgba(29,66,138,0.4); color: var(--nba-light-blue); border: 1px solid var(--border); }
+    .badge-upcoming { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+    .teams-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .team-block { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 70px; }
+    .team-bubble { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; letter-spacing: 0.02em; border: 1.5px solid rgba(255,255,255,0.1); }
+    .team-abbr { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text); }
+    .team-score { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: var(--text); }
+    .team-score.losing { color: var(--text3); }
+    .score-sep { font-size: 16px; color: var(--text3); font-weight: 300; }
+    .game-quarter { font-size: 10px; font-weight: 700; color: var(--nba-light-blue); text-align: center; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; }
+    .game-meta { font-size: 11px; color: var(--text3); text-align: center; margin-top: 6px; }
+    .win-bar { height: 3px; background: var(--bg3); border-radius: 2px; margin-top: 10px; overflow: hidden; display: flex; }
+    .win-away { background: var(--nba-light-blue); }
+    .win-home { background: var(--nba-red); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .cnt-pill { background: var(--nba-blue); color: white; font-size: 9px; padding: 1px 6px; border-radius: 10px; }
+    .leaders-hdr { display: grid; grid-template-columns: 28px 1fr 44px 44px 56px; gap: 6px; padding: 5px 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); border-bottom: 1px solid var(--border); margin-bottom: 2px; }
+    .leader-row { display: grid; grid-template-columns: 28px 1fr 44px 44px 56px; gap: 6px; align-items: center; padding: 8px 10px; border-radius: 6px; transition: background 0.12s; }
+    .leader-row:hover { background: var(--bg2); }
+    .ldr-rank { font-size: 11px; font-weight: 800; color: var(--text3); text-align: center; }
+    .ldr-rank.top3 { color: var(--nba-gold); }
+    .ldr-player { display: flex; flex-direction: column; gap: 1px; }
+    .ldr-name { font-size: 12px; font-weight: 700; color: var(--text); }
+    .ldr-team { font-size: 10px; font-weight: 700; color: var(--text2); letter-spacing: 0.06em; }
+    .ldr-num { font-size: 12px; color: var(--text3); text-align: right; font-variant-numeric: tabular-nums; }
+    .ldr-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+    .ldr-val { font-size: 14px; font-weight: 800; color: var(--nba-white); font-variant-numeric: tabular-nums; }
+    .ldr-bar { width: 44px; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+    .ldr-fill { height: 100%; background: var(--nba-blue); border-radius: 2px; }
+    .schedule-list { display: flex; flex-direction: column; gap: 6px; }
+    .sched-row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; transition: border-color 0.12s; }
+    .sched-row:hover { border-color: var(--nba-blue); }
+    .sched-date { min-width: 44px; text-align: center; border-right: 1px solid var(--border); padding-right: 10px; }
+    .sched-dow { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text2); }
+    .sched-day { font-size: 16px; font-weight: 800; color: var(--text); }
+    .sched-mon { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text3); }
+    .sched-info { flex: 1; }
+    .sched-teams { font-size: 13px; font-weight: 700; color: var(--text); }
+    .sched-venue { font-size: 10px; color: var(--text3); margin-top: 1px; }
+    .sched-time { font-size: 11px; font-weight: 700; color: var(--text2); white-space: nowrap; }
+    .standings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:540px){.standings-grid{grid-template-columns:1fr;}}
+    .conf-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text2); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .conf-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .std-table { width: 100%; border-collapse: collapse; }
+    .std-table th { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); padding: 4px 6px; text-align: right; border-bottom: 1px solid var(--border); }
+    .std-table th:first-child { text-align: left; }
+    .std-table td { padding: 7px 6px; font-size: 11px; border-bottom: 1px solid rgba(29,66,138,0.18); text-align: right; font-variant-numeric: tabular-nums; }
+    .std-table td:first-child { text-align: left; }
+    .std-table tr:last-child td { border-bottom: none; }
+    .std-table tr:hover td { background: rgba(29,66,138,0.08); }
+    .std-seed { font-size: 10px; color: var(--text3); font-weight: 700; min-width: 16px; display: inline-block; }
+    .std-team-cell { display: flex; align-items: center; gap: 6px; }
+    .std-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .std-name { font-weight: 700; color: var(--text); font-size: 11px; }
+    .std-w { color: var(--nba-white); font-weight: 700; }
+    .std-pct { color: var(--text2); }
+    .std-gb { color: var(--text3); font-size: 10px; }
+    .w-streak { color: #3DB867; font-size: 10px; font-weight: 700; }
+    .l-streak { color: var(--nba-red); font-size: 10px; font-weight: 700; }
+    .playoff-cut td { border-top: 1.5px dashed var(--nba-red) !important; }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--text3); font-size: 13px; }
+    .loading { text-align: center; padding: 32px; color: var(--text2); font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .spin { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--nba-blue); border-radius: 50%; animation: spin 0.6s linear infinite; flex-shrink: 0; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .chat-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 20px; background: var(--bg);
-      border-top: 1px solid var(--border); display: flex; gap: 8px; }
-    .chat-bar input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--bg2); color: var(--text); font-size: 13px; font-family: var(--font); outline: none; }
-    .chat-bar button { padding: 10px 20px; border-radius: 8px; border: none; background: var(--accent);
-      color: white; font-weight: 700; font-size: 13px; cursor: pointer; font-family: var(--font); }
+    .chat-bar { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px 20px; background: rgba(6,16,31,0.95); border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .chat-bar input { flex: 1; padding: 9px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font-size: 13px; font-family: var(--font); outline: none; transition: border-color 0.15s; }
+    .chat-bar input:focus { border-color: var(--nba-blue); }
+    .chat-bar input::placeholder { color: var(--text3); }
+    .chat-bar button { padding: 9px 18px; border-radius: 7px; border: none; background: var(--nba-blue); color: white; font-weight: 700; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; font-family: var(--font); transition: opacity 0.15s; }
+    .chat-bar button:hover { opacity: 0.88; }
     main { padding-bottom: 64px; }
   </style>
 </head>
 <body>
   <div class="header">
-    <h1><span>NBA</span> Dashboard</h1>
+    <div class="logo-mark">
+      <div class="logo-badge"><div class="logo-badge-inner"></div></div>
+      <div>
+        <div class="header-title"><span class="nba-word">NBA</span> Dashboard</div>
+        <div class="header-sub">Live Scores &amp; Stats</div>
+      </div>
+    </div>
     <div class="tabs">
-      <button class="tab-btn active" data-tab="scoreboard">Scoreboard</button>
+      <button class="tab-btn active" data-tab="scoreboard">Scores</button>
       <button class="tab-btn" data-tab="schedule">Schedule</button>
       <button class="tab-btn" data-tab="leaders">Leaders</button>
+      <button class="tab-btn" data-tab="standings">Standings</button>
     </div>
   </div>
   <main>
     <div id="tab-scoreboard" class="panel active">
       <div class="controls">
         <input type="date" id="score-date" />
-        <button id="score-load">Load Games</button>
-        <button id="score-today">Today</button>
+        <button class="btn" id="score-load">Load</button>
+        <button class="btn btn-ghost" id="score-today">Today</button>
       </div>
+      <div id="score-label" class="section-label" style="display:none;"></div>
       <div id="score-grid" class="game-grid">
-        <div class="loading">Loading scoreboard</div>
+        <div class="loading"><div class="spin"></div>Loading scoreboard</div>
       </div>
     </div>
     <div id="tab-schedule" class="panel">
       <div class="controls">
-        <select id="sched-team"></select>
-        <button id="sched-load">Load Schedule</button>
+        <select id="sched-team"><option value="">Select a team...</option></select>
+        <button class="btn" id="sched-load">Load Schedule</button>
       </div>
       <div id="sched-list" class="schedule-list">
-        <div class="empty-state">Select a team to view schedule</div>
+        <div class="empty-state">Select a team to view upcoming games</div>
       </div>
     </div>
     <div id="tab-leaders" class="panel">
@@ -119,17 +170,27 @@
         </select>
         <select id="leaders-mode">
           <option value="PerGame">Per Game</option>
-          <option value="Totals">Totals</option>
+          <option value="Totals">Season Totals</option>
         </select>
-        <button id="leaders-load">Load Leaders</button>
+        <button class="btn" id="leaders-load">Load Leaders</button>
       </div>
-      <div id="leaders-content">
-        <div class="empty-state">Select a stat category</div>
+      <div id="leaders-hdr" class="leaders-hdr" style="display:none;">
+        <div>#</div><div>Player</div>
+        <div style="text-align:right;">GP</div>
+        <div style="text-align:right;">MIN</div>
+        <div style="text-align:right;">STAT</div>
       </div>
+      <div id="leaders-content"><div class="empty-state">Select a stat category to view leaders</div></div>
+    </div>
+    <div id="tab-standings" class="panel">
+      <div class="controls">
+        <button class="btn" id="standings-load">Load Standings</button>
+      </div>
+      <div id="standings-content"><div class="empty-state">Click Load Standings to view current conference rankings</div></div>
     </div>
   </main>
   <div class="chat-bar">
-    <input type="text" id="chat-input" placeholder="Ask Claude about NBA data..." />
+    <input type="text" id="chat-input" placeholder="Ask Claude about NBA scores, stats, standings..." />
     <button id="chat-send">Ask</button>
   </div>
   <script type="module" src="./dashboard.ts"></script>
